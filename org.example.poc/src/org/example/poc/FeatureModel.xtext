@@ -1,0 +1,95 @@
+/*
+ * FeatureModel.xtext
+ * Phase 1 — Grammar Finalization
+ *
+ * Replaces the flat PoC grammar (must/may list, Rules 1-5 in the
+ * original file) with a full recursive feature tree: root feature,
+ * nested mandatory/optional children, xor/or groups, cross-tree
+ * constraints, and product configurations.
+ *
+ * Grammar name, generate URI, and package are kept IDENTICAL to the
+ * PoC so MWE2 regenerates the existing org.example.poc.featureModel
+ * EMF package in place, rather than creating a new one.
+ */
+grammar org.example.poc.FeatureModel with org.eclipse.xtext.common.Terminals
+
+generate featureModel "http://www.example.org/poc/FeatureModel"
+
+// ---------------------------------------------------------------------
+// Rule 1 — FeatureModel: the whole .fm file
+// PoC used 'model' name=ID '{' features+=Feature+ '}' (flat list).
+// Now: 'feature' 'model' name=ID, followed by ONE recursive root
+// feature (the tree), then the optional constraints block, then any
+// number of named product configurations.
+// ---------------------------------------------------------------------
+FeatureModel:
+    'feature' 'model' name=ID
+    root=Feature
+    ('constraints' '{' constraints+=Constraint* '}')?
+    configurations+=Configuration*
+;
+
+// ---------------------------------------------------------------------
+// Rule 2 — Feature: one node in the tree.
+// PoC: kind=Kind name=ID (flat, no body, no recursion).
+// Now: name first, modifier optional and in parentheses — e.g.
+// `Security (mandatory)` — then an optional body of further nested
+// children and/or xor/or groups, freely mixed. Root feature typically
+// omits the modifier (existence isn't optional/mandatory for the root).
+// ---------------------------------------------------------------------
+Feature:
+    name=ID ('(' modifier=Modifier ')')?
+    ('{'
+        (children+=Feature | groups+=Group)*
+    '}')?
+;
+
+enum Modifier:
+    mandatory='mandatory' | optional='optional'
+;
+
+// ---------------------------------------------------------------------
+// New: Group — xor/or alternative groups. Not present in the PoC at
+// all. Declares a fresh set of child features; Alloy semantics (exactly
+// one selected for xor, at least one for or) are enforced in the
+// generator, Phase 3 — the grammar just captures the structure.
+// ---------------------------------------------------------------------
+Group:
+    kind=GroupKind '{' features+=Feature+ '}'
+;
+
+enum GroupKind:
+    xor='xor' | or='or'
+;
+
+// ---------------------------------------------------------------------
+// Rule 3 — Constraint: unchanged in spirit from the PoC (source/target
+// cross-references + requires/excludes), just renamed op -> type to
+// match the plan's terminology. NOTE: renaming the field means the
+// generator's `c.op` switch (FeatureModelGenerator.xtend line 120)
+// must become `c.type` in Phase 3 — flagging now so it's not a
+// surprise later.
+// ---------------------------------------------------------------------
+Constraint:
+    source=[Feature|ID] type=ConstraintType target=[Feature|ID]
+;
+
+enum ConstraintType:
+    requires='requires' | excludes='excludes'
+;
+
+// ---------------------------------------------------------------------
+// Rule 5 — ConstraintType kept, but enum literal casing changed from
+// REQUIRES/EXCLUDES to requires/excludes to match the plan's examples.
+// If you'd rather keep upper-case Alloy-side literals, tell me and
+// I'll flip this back — purely a style choice, not a semantic one.
+// ---------------------------------------------------------------------
+
+// ---------------------------------------------------------------------
+// New: Configuration — not present in the PoC at all. A named,
+// concrete product selection, used later to validate against the
+// generated Alloy model.
+// ---------------------------------------------------------------------
+Configuration:
+    'configuration' name=ID 'selects' '{' features+=[Feature|ID]* '}'
+;

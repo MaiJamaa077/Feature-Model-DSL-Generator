@@ -1,0 +1,23 @@
+// SmartHomeError.fm
+// Presentation Act 2 — deliberately contradictory feature model
+//
+// Same as SmartHome.fm with one extra constraint added:
+//   Security excludes Security
+//
+// This means:
+//   "must Security"              →  Security MUST always be selected
+//   "Security excludes Security" →  Security can NEVER be selected
+//
+// Both cannot be true at the same time.
+// Expected result when run in Alloy: "No instance found"
+
+model SmartHomeError {
+    must Security
+    may  Lights
+    must WiFi
+}
+
+constraints {
+    Lights requires WiFi
+    Security excludes Security
+}

@@ -1,0 +1,46 @@
+/*
+ * PoCWithError.fm
+ * ================
+ * Contradiction Feature Model — Presentation Act 2
+ *
+ * This model is IDENTICAL to PoC.fm except for one deliberately
+ * introduced contradiction in the constraints block:
+ *
+ *   Security excludes Security
+ *
+ * WHAT THIS MEANS:
+ *   The "excludes" constraint says that Security and Security cannot
+ *   both be selected at the same time. But a feature cannot exclude
+ *   itself — this forces Security to be permanently deselected.
+ *
+ * COMBINED WITH:
+ *   mandatory Security  →  Security MUST be selected
+ *
+ * RESULT:
+ *   Security must be selected  AND  Security must NOT be selected
+ *   → LOGICAL CONTRADICTION → no valid product configuration exists
+ *
+ * EXPECTED ALLOY OUTPUT:
+ *   Alloy Analyzer reports "No instance found."
+ *
+ * PRESENTATION TALKING POINT:
+ *   "The formal model detected a constraint contradiction automatically.
+ *    Without formal verification, this kind of error would require
+ *    manual inspection of all feature combinations — infeasible at scale."
+ */
+
+feature-model PoCWithError {
+    mandatory Security {}
+    optional  Lighting {}
+    mandatory Connectivity {
+        xor {
+            WiFi
+            Bluetooth
+        }
+    }
+}
+
+constraints {
+    Lighting requires WiFi
+    Security excludes Security
+}

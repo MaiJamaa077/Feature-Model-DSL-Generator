@@ -1,0 +1,40 @@
+feature model SmartHome
+
+SmartHome {
+    Security (mandatory) {
+        xor {
+            AlarmSystem
+            CameraSystem
+        }
+    }
+    Lighting (mandatory)
+    Climate (optional) {
+        or {
+            Heating
+            Cooling
+            Ventilation
+        }
+    }
+    RemoteAccess (optional)
+}
+
+constraints {
+    RemoteAccess requires Security
+    CameraSystem excludes Heating
+}
+
+configuration BasicHome selects {
+    Security
+    AlarmSystem
+    Lighting
+}
+
+configuration FullHome selects {
+    Security
+    CameraSystem
+    Lighting
+    Climate
+    Heating
+    Cooling
+    RemoteAccess
+}

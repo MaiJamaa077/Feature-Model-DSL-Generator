@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Feature Model PoC
+Bundle-SymbolicName: org.example.poc;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: PoC Presentation
+Require-Bundle: org.eclipse.xtext,
+ org.eclipse.xtext.xbase.lib,
+ org.eclipse.emf.ecore,
+ org.eclipse.xtext.generator,
+ org.eclipse.xtend.lib
+Bundle-RequiredExecutionEnvironment: JavaSE-17
+Export-Package: org.example.poc,
+ org.example.poc.featureModel,
+ org.example.poc.generator

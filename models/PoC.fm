@@ -1,0 +1,45 @@
+/*
+ * PoC.fm
+ * =======
+ * Demonstration Feature Model — Presentation Act 1
+ *
+ * This model represents a small smart-home system with five features.
+ * It is deliberately small enough to verify manually on paper.
+ *
+ * FEATURE TREE (visual):
+ *
+ *   [PoC]
+ *   ├── mandatory  Security       (always selected)
+ *   ├── optional   Lighting       (can be selected or not)
+ *   └── mandatory  Connectivity   (always selected)
+ *                  └── xor
+ *                      ├── WiFi
+ *                      └── Bluetooth
+ *
+ * CROSS-TREE CONSTRAINT:
+ *   Lighting requires WiFi
+ *   → If Lighting is selected, WiFi MUST also be selected.
+ *
+ * VALID CONFIGURATIONS (manually verified):
+ *   Config 1: {Security, Connectivity, WiFi}
+ *   Config 2: {Security, Connectivity, Bluetooth}
+ *   Config 3: {Security, Connectivity, WiFi, Lighting}
+ *
+ *   Note: {Security, Connectivity, Bluetooth, Lighting} is INVALID
+ *         because Lighting requires WiFi, but WiFi is not selected.
+ */
+
+feature-model PoC {
+    mandatory Security {}
+    optional  Lighting {}
+    mandatory Connectivity {
+        xor {
+            WiFi
+            Bluetooth
+        }
+    }
+}
+
+constraints {
+    Lighting requires WiFi
+}

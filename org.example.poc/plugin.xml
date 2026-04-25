@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<!--
+    plugin.xml
+    ----------
+    This file registers the FeatureModel DSL with the Eclipse platform.
+
+    Xtext generates an ISetup class (FeatureModelStandaloneSetup) which
+    registers the parser, serializer, and code generator for .fm files.
+
+    The key extension point is:
+      org.eclipse.xtext.extension_resourceServiceProvider
+    which tells Eclipse: "When you see a .fm file, use THIS language infrastructure."
+
+    IMPORTANT: After editing the grammar, run the MWE2 workflow
+    (GenerateFeatureModel.mwe2) to regenerate all infrastructure classes.
+    You do NOT need to manually edit this file.
+-->
+<plugin>
+    <extension
+            point="org.eclipse.emf.ecore.generated_package"
+            class="org.example.poc.featureModel.FeatureModelPackageImpl"
+            uri="http://www.example.org/poc/FeatureModel"
+            genModel="model/generated/FeatureModel.genmodel">
+    </extension>
+    <extension
+            point="org.eclipse.xtext.extension_resourceServiceProvider">
+        <resourceServiceProvider
+                uriExtension="fm"
+                class="org.example.poc.FeatureModelLanguage$ResourceServiceProviderImpl">
+        </resourceServiceProvider>
+    </extension>
+</plugin>
